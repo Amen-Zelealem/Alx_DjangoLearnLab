@@ -73,4 +73,4 @@ Feel free to explore the [Django documentation](https://docs.djangoproject.com/e
 Contributions are welcome! Feel free to open issues or submit pull requests to help improve this project.
 
 ## 📧 **Contact**
-For any questions or feedback, please reach out to [Amen_Zelealem](amenzelealem@gmail.com).
+For any questions or feedback, please reach out to [Amen_Zelealem](mailto:amenzelealem@gmail.com).
