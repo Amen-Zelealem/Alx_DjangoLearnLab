@@ -1,3 +1,3 @@
-book.title = '1984 (Updated)'
+book.publication_year = 'Nineteen Eighty-Four'
 book.save()
 print(book)
