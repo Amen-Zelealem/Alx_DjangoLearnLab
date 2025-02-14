@@ -67,7 +67,10 @@ Feel free to explore the [Django documentation](https://docs.djangoproject.com/e
 
 + **GitHub Repository**: [Alx_DjangoLearnLab](https://github.com/Amen-Zelealem/Alx_DjangoLearnLab)
 
-+ **Directory**: [Introduction_to_Django](https://github.com/Amen-Zelealem/Alx_DjangoLearnLab/Introduction_to_Django)
++ **Directory**: [Introduction_to_Django](https://github.com/Amen-Zelealem/Alx_DjangoLearnLab/tree/main/Introduction_to_Django/LibraryProject)
 
 ## 🤝 **Contributing**
 Contributions are welcome! Feel free to open issues or submit pull requests to help improve this project.
+
+## 📧 **Contact**
+For any questions or feedback, please reach out to [Amen_Zelealem](amenzelealem@gmail.com).
