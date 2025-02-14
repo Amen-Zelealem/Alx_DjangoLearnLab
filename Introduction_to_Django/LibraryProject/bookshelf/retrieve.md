@@ -1,2 +1,2 @@
-book = Book.objects.get(title='The Great Gatsby')
+book = Book.objects.get(title='1984')
 print(book)
