@@ -24,15 +24,16 @@ class LibraryDetailView(DetailView):
 
 # Registration view
 def register(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("login")  # Redirect to login page after registration
+            user = form.save()
+            # Automatically log the user in after successful registration
+            login(request, user)
+            return redirect('login')  # Redirect to login page after registration
     else:
         form = UserCreationForm()
-    return render(request, "register.html", {"form": form})
-
+    return render(request, 'register.html', {'form': form})
 
 # Login view
 def login_view(request):
