@@ -40,6 +40,27 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_SECURE = True  # Only send CSRF cookies over HTTPS
 SESSION_COOKIE_SECURE = True  # Only send session cookies over HTTPS
 
+
+# Enforce HTTPS on all connections by redirecting HTTP to HTTPS
+SECURE_SSL_REDIRECT = True  # This will redirect all HTTP requests to HTTPS
+
+# HTTP Strict Transport Security (HSTS) settings
+# This ensures browsers only communicate with your site over HTTPS
+SECURE_HSTS_SECONDS = 31536000  # One year (in seconds)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains as well
+SECURE_HSTS_PRELOAD = True  # Allow this site to be preloaded in the browser's HSTS list
+
+
+# Prevent clickjacking by setting the X-Frame-Options header to DENY
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent browsers from sniffing the MIME type and interpreting content differently than declared
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser XSS filtering to prevent cross-site scripting attacks
+SECURE_BROWSER_XSS_FILTER = True
+
+
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 
