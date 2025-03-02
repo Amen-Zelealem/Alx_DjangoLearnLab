@@ -23,9 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-qgy4mjey$e=!g4sh^vgofa^pxfa3=s7g@hw8807t-t(%s9m-1v"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
+
+# Enable browser XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent clickjacking attacks
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent MIME sniffing attacks
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Ensure cookies are only sent over HTTPS in production
+CSRF_COOKIE_SECURE = True  # Only send CSRF cookies over HTTPS
+SESSION_COOKIE_SECURE = True  # Only send session cookies over HTTPS
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
