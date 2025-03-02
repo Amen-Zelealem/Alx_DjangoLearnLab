@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 SECURE_BROWSER_XSS_FILTER = True
 
 # Prevent clickjacking attacks
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 # Prevent MIME sniffing attacks
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -52,7 +52,7 @@ SECURE_HSTS_PRELOAD = True  # Allow this site to be preloaded in the browser's H
 
 
 # Prevent clickjacking by setting the X-Frame-Options header to DENY
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 # Prevent browsers from sniffing the MIME type and interpreting content differently than declared
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -61,7 +61,11 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
 
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
+# Secure Headers Implementation
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+AUTH_USER_MODEL = "bookshelf.CustomUser"
 
 
 # Application definition
