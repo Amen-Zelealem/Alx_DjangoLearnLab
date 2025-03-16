@@ -15,16 +15,16 @@ class ListView(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
 
     # Define fields to filter by
-    filterset_fields = ["title", "author", "publication_year"]  # Fields to filter
+    filterset_fields = ["title", "author", "publication_year"]
 
     # Define fields to search by
-    search_fields = ["title", "author"]  # Fields to search in
+    search_fields = ["title", "author"]
 
     # Define fields that can be used for ordering
-    ordering_fields = ["title", "publication_year"]  # Fields to order by
+    ordering_fields = ["title", "publication_year"]
 
     # Default ordering by title
-    ordering = ["title"]  # Default ordering
+    ordering = ["title"]
 
 
 # ✅ CreateView - Only authenticated users can create
