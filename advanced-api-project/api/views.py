@@ -5,28 +5,26 @@ from .models import Book
 from .serializers import BookSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
-# ✅ ListView - Allows anyone to read, but only authenticated users can create
+
 class ListView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
-    # Setup filtering, searching, and ordering
+
+    # Set up filtering, searching, and ordering
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    
+
     # Define fields to filter by
-    filterset_fields = ['title', 'author', 'publication_year']
-    
-    # Define fields for searching
-    search_fields = ['title', 'author']
-    
+    filterset_fields = ["title", "author", "publication_year"]  # Fields to filter
+
+    # Define fields to search by
+    search_fields = ["title", "author"]  # Fields to search in
+
     # Define fields that can be used for ordering
-    ordering_fields = ['title', 'publication_year']
-    
+    ordering_fields = ["title", "publication_year"]  # Fields to order by
+
     # Default ordering by title
-    ordering = ['title']
-
-
+    ordering = ["title"]  # Default ordering
 
 
 # ✅ CreateView - Only authenticated users can create
