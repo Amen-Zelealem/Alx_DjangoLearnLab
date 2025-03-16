@@ -10,6 +10,10 @@ Welcome to the **Advanced API Project**! This project is built using Django and 
     - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Project Structure](#project-structure)
+  - [Filtering, Searching, and Ordering](#filtering-searching-and-ordering)
+    - [Filtering:](#filtering)
+    - [Searching:](#searching)
+    - [Ordering:](#ordering)
 
 ## Getting Started
 
@@ -79,3 +83,30 @@ advanced_api_project/
 └── manage.py                # Project management script
 └── README.md
 ```
+
+## Filtering, Searching, and Ordering
+
+The following features are available on the `/api/books/` endpoint:
+
+### Filtering:
+- You can filter books by the following fields:
+  - `title`: Filter by book title.
+  - `author`: Filter by book author.
+  - `publication_year`: Filter by the year the book was published.
+
+Example:GET /api/books/?title=Book Title&author=Author Name&publication_year=2022
+
+### Searching:
+- You can search for books by `title` or `author`.
+
+Example:GET /api/books/?search=book
+
+
+### Ordering:
+- You can order the results by `title` or `publication_year`.
+
+Example:GET /api/books/?ordering=title
+
+We can also combine filtering, searching, and ordering in a single query:
+
+GET /api/books/?author=Author Name&search=book&ordering=publication_year
