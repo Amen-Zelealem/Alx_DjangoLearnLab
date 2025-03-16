@@ -58,6 +58,7 @@ Create a new Django app named api:
 
 Here’s a brief overview of the project structure:
 
+```
 advanced_api_project/
 │
 ├── api/                     # Your API application
@@ -78,4 +79,4 @@ advanced_api_project/
 │
 └── manage.py                # Project management script
 └── README.md
-
+```
