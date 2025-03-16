@@ -9,7 +9,6 @@ Welcome to the **Advanced API Project**! This project is built using Django and 
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [On Windows use `djenv\Scripts\activate` to activate the virtual environment](#on-windows-use-djenvscriptsactivate-to-activate-the-virtual-environment)
 - [Project Structure](#project-structure)
 
 ## Getting Started
@@ -28,7 +27,7 @@ Create and activate your virtual environment to keep your project dependencies i
    
 ```python -m venv djenv``` used to create the virtual environment named djenv
 
-# On Windows use `djenv\Scripts\activate` to activate the virtual environment
+On Windows use `djenv\Scripts\activate` to activate the virtual environment
 
 2. **Install Required Packages**
 
