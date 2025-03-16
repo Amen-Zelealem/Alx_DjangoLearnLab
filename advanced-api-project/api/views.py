@@ -9,6 +9,12 @@ class ListView(generics.ListCreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 
+class CreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class UpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
