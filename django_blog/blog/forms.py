@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post
-from .models import Comment
+from .models import Post, Comment, Tag
+
 
 
 # CustomUserCreationForm for creating a new user
@@ -13,16 +13,25 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
-# PostForm for creating and editing blog posts
+# PostForm for creating and editing blog posts with tags
 class PostForm(forms.ModelForm):
+    tags = forms.CharField(max_length=200, required=False, help_text="Enter tags separated by commas.")
+
     class Meta:
         model = Post
-        fields = ['title', 'content']
-        
-    def __init__(self, *args, **kwargs):
-        super(PostForm, self).__init__(*args, **kwargs)
-        self.fields['title'].widget.attrs.update({'placeholder': 'Enter title'})
-        self.fields['content'].widget.attrs.update({'placeholder': 'Enter content'})
+        fields = ['title', 'content', 'tags']
+
+    def save(self, commit=True):
+        post = super().save(commit=False)
+        tags = self.cleaned_data.get('tags')
+        if tags:
+            tag_list = [tag.strip() for tag in tags.split(',')]
+            tags = [Tag.objects.get_or_create(name=tag)[0] for tag in tag_list]
+            post.save()
+            post.tags.set(tags)
+        else:
+            post.save()
+        return post
 
 # Added Comments
 class CommentForm(forms.ModelForm):
