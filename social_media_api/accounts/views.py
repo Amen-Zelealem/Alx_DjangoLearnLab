@@ -14,6 +14,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegisterSerializer
+from accounts.models import CustomUser
+
 
 class RegisterView(APIView):
     def post(self, request):
