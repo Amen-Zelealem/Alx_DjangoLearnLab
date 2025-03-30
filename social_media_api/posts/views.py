@@ -12,12 +12,13 @@ from rest_framework.exceptions import NotFound
 
 User = get_user_model()
 
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
         # Use generics.get_object_or_404 for retrieving the post
         post = generics.get_object_or_404(Post, pk=pk)
@@ -31,14 +32,14 @@ class PostViewSet(viewsets.ModelViewSet):
         Notification.objects.create(
             recipient=post.author,
             actor=request.user,
-            verb='liked your post',
+            verb="liked your post",
             target_content_type=ContentType.objects.get_for_model(Post),
-            target_object_id=post.id
+            target_object_id=post.id,
         )
 
         return Response({"detail": "Post liked successfully"}, status=200)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def unlike(self, request, pk=None):
         # Use generics.get_object_or_404 for retrieving the post
         post = generics.get_object_or_404(Post, pk=pk)
@@ -55,9 +56,9 @@ class PostViewSet(viewsets.ModelViewSet):
         Notification.objects.filter(
             recipient=post.author,
             actor=request.user,
-            verb='liked your post',
+            verb="liked your post",
             target_content_type=ContentType.objects.get_for_model(Post),
-            target_object_id=post.id
+            target_object_id=post.id,
         ).delete()
 
         return Response({"detail": "Post unliked successfully"}, status=200)
@@ -68,16 +69,25 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
 
-
 class PostFeedView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Example: Returning the latest 10 posts for the feed
-        posts = Post.objects.all().order_by('-created_at')[:10]
+        # Get the current user
+        user = request.user
+
+        # Get the list of users that the current user is following
+        following_users = user.following.all()
+
+        # Fetch posts from the followed users, ordered by creation date (most recent first)
+        posts = Post.objects.filter(author__in=following_users).order_by("-created_at")
+
+        # Serialize the posts
         serializer = PostSerializer(posts, many=True)
+
         return Response(serializer.data)
-      
+
+
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
