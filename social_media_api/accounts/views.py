@@ -1,29 +1,24 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-
-from social_media_api.accounts.models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer
-from django.contrib.auth import authenticate
+from .models import CustomUser
 
-# accounts/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import RegisterSerializer
-from accounts.models import CustomUser
+User = get_user_model()
+
 
 
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()  
+            user = serializer.save()
             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     def post(self, request):
@@ -36,29 +31,36 @@ class LoginView(APIView):
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 
-class FollowUserView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()  # Ensures the check passes
+class FollowUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user_to_follow = get_object_or_404(CustomUser, id=user_id)
-        request.user.followers.add(user_to_follow)
+
+        if request.user == user_to_follow:
+            return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.following.add(user_to_follow)  # Ensure 'following' is defined in CustomUser model
         return Response({"message": "User followed successfully"}, status=status.HTTP_200_OK)
 
-class UnfollowUserView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()  # Ensures the check passes
+
+class UnfollowUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
-        request.user.followers.remove(user_to_unfollow)
+
+        if request.user == user_to_unfollow:
+            return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.following.remove(user_to_unfollow)  # Ensure 'following' is defined in CustomUser model
         return Response({"message": "User unfollowed successfully"}, status=status.HTTP_200_OK)

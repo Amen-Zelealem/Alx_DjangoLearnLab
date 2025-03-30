@@ -1,13 +1,14 @@
 from rest_framework import viewsets, permissions, generics, status
 from .models import Notification, Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.exceptions import NotFound
-from rest_framework import generics  
+
 
 User = get_user_model()
 
@@ -62,6 +63,21 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Post unliked successfully"}, status=200)
 
 
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+
+class PostFeedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Example: Returning the latest 10 posts for the feed
+        posts = Post.objects.all().order_by('-created_at')[:10]
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+      
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
