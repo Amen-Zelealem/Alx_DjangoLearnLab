@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from django.core.exceptions import ValidationError
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +16,8 @@ class RegisterSerializer(serializers.Serializer):
     profile_picture = serializers.ImageField(required=False)  
 
     def create(self, validated_data):
+        if get_user_model().objects.filter(username=validated_data['username']).exists():
+            raise ValidationError("Username already exists.")
         user = get_user_model().objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
