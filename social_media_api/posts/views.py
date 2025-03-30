@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.exceptions import NotFound
-from django.shortcuts import get_object_or_404
+from rest_framework import generics  
 
 User = get_user_model()
 
@@ -18,16 +18,16 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
-        # Use get_object_or_404 for retrieving the post
-        post = get_object_or_404(Post, pk=pk)
+        # Use generics.get_object_or_404 for retrieving the post
+        post = generics.get_object_or_404(Post, pk=pk)
 
-        # Check if the user has already liked the post
-        like, created = Like.objects.get_or_create(post=post, user=request.user)
+        # Use get_or_create to ensure a like is created only if it doesn't exist
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             return Response({"detail": "You have already liked this post."}, status=400)
 
         # Create a notification for the post author
-        notification = Notification.objects.create(
+        Notification.objects.create(
             recipient=post.author,
             actor=request.user,
             verb='liked your post',
@@ -39,8 +39,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
-        # Use get_object_or_404 for retrieving the post
-        post = get_object_or_404(Post, pk=pk)
+        # Use generics.get_object_or_404 for retrieving the post
+        post = generics.get_object_or_404(Post, pk=pk)
 
         # Check if the user has liked the post
         like = Like.objects.filter(post=post, user=request.user).first()
@@ -62,32 +62,12 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Post unliked successfully"}, status=200)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
-        # Save the comment with the author as the current user
-        serializer.save(author=self.request.user)
-
-
-class UserFeedView(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        following_users = user.following.all()
-        return Post.objects.filter(author__in=following_users).order_by("-created_at")
-
-
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        # Get the post and the user
-        post = get_object_or_404(Post, pk=pk)
+        # Use generics.get_object_or_404 for retrieving the post
+        post = generics.get_object_or_404(Post, pk=pk)
 
         user = request.user
 
@@ -98,8 +78,8 @@ class LikePostView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # If the user has already liked the post, return a response
-        like, created = Like.objects.get_or_create(post=post, user=user)
+        # Ensure a like is created only if it doesn't exist
+        like, created = Like.objects.get_or_create(user=user, post=post)
         if not created:
             return Response(
                 {"detail": "You already liked this post."},
@@ -120,8 +100,8 @@ class UnlikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        # Get the post and the user
-        post = get_object_or_404(Post, pk=pk)
+        # Use generics.get_object_or_404 for retrieving the post
+        post = generics.get_object_or_404(Post, pk=pk)
 
         user = request.user
 
