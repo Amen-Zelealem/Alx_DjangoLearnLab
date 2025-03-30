@@ -11,13 +11,15 @@ User = get_user_model()
 
 
 # Register View
-class RegisterView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
+class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
-    def perform_create(self, serializer):
-        user = serializer.save()
-        return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Login View
@@ -43,7 +45,7 @@ class UserProfileView(APIView):
 
 
 # Follow User View
-class FollowUserView(APIView):
+class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
@@ -58,7 +60,7 @@ class FollowUserView(APIView):
 
 
 # Unfollow User View
-class UnfollowUserView(APIView):
+class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
@@ -73,12 +75,10 @@ class UnfollowUserView(APIView):
 
 
 # Get All Users (for listing users)
-class AllUsersView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
+class AllUsersView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        users = self.get_queryset()
-        serializer = self.get_serializer(users, many=True)
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
