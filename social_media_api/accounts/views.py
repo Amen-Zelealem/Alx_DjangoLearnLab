@@ -10,16 +10,17 @@ from .models import CustomUser
 User = get_user_model()
 
 
+# Register View
+class RegisterView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = RegisterSerializer
 
-class RegisterView(APIView):
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        user = serializer.save()
+        return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
 
 
+# Login View
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -32,6 +33,7 @@ class LoginView(APIView):
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# User Profile View
 class UserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -40,6 +42,7 @@ class UserProfileView(APIView):
         return Response(serializer.data)
 
 
+# Follow User View
 class FollowUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -49,10 +52,12 @@ class FollowUserView(APIView):
         if request.user == user_to_follow:
             return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        request.user.following.add(user_to_follow)  # Ensure 'following' is defined in CustomUser model
+        # Add the user to the following list
+        request.user.following.add(user_to_follow)
         return Response({"message": "User followed successfully"}, status=status.HTTP_200_OK)
 
 
+# Unfollow User View
 class UnfollowUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -62,5 +67,18 @@ class UnfollowUserView(APIView):
         if request.user == user_to_unfollow:
             return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        request.user.following.remove(user_to_unfollow)  # Ensure 'following' is defined in CustomUser model
+        # Remove the user from the following list
+        request.user.following.remove(user_to_unfollow)
         return Response({"message": "User unfollowed successfully"}, status=status.HTTP_200_OK)
+
+
+# Get All Users (for listing users)
+class AllUsersView(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        users = self.get_queryset()
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
