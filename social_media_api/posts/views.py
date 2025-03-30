@@ -1,14 +1,13 @@
 from rest_framework import viewsets, permissions, generics, status
 from .models import Notification, Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
-from rest_framework import filters
-from django.contrib.contenttypes.models import ContentType
 from rest_framework.decorators import action
-from django.contrib.auth import get_user_model
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from rest_framework.exceptions import NotFound
-
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -20,7 +19,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)
 
         # Check if the user has already liked the post
         if Like.objects.filter(post=post, user=request.user).exists():
@@ -42,7 +41,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)
 
         # Check if the user has liked the post
         like = Like.objects.filter(post=post, user=request.user).first()
@@ -63,12 +62,14 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Post unliked successfully"}, status=200)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
+        # Save the comment with the author as the current user
         serializer.save(author=self.request.user)
 
 
