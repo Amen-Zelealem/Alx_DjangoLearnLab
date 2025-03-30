@@ -2,8 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Post, Comment, Tag
-
-
+from django.forms import widgets  
 
 # CustomUserCreationForm for creating a new user
 class CustomUserCreationForm(UserCreationForm):
@@ -13,9 +12,19 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+# Custom TagWidget for handling tags as checkboxes
+class TagWidget(widgets.CheckboxSelectMultiple):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 # PostForm for creating and editing blog posts with tags
 class PostForm(forms.ModelForm):
-    tags = forms.CharField(max_length=200, required=False, help_text="Enter tags separated by commas.")
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=TagWidget(),  
+        required=False,
+        label="Tags"
+    )
 
     class Meta:
         model = Post
@@ -25,10 +34,8 @@ class PostForm(forms.ModelForm):
         post = super().save(commit=False)
         tags = self.cleaned_data.get('tags')
         if tags:
-            tag_list = [tag.strip() for tag in tags.split(',')]
-            tags = [Tag.objects.get_or_create(name=tag)[0] for tag in tag_list]
             post.save()
-            post.tags.set(tags)
+            post.tags.set(tags)  
         else:
             post.save()
         return post
