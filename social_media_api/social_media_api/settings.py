@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-(a=#z(#d*hu5yf3wa#%a3e7^6l@^%b$ajkeunc+41-w&c75)si
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 ["SECURE_BROWSER_XSS_FILTER", "X_FRAME_OPTIONS", "SECURE_SSL_REDIRECT"]
 
@@ -38,7 +38,7 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
 
@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     "accounts",
     "rest_framework.authtoken",
     "posts",
-    "notifications"
+    "notifications",
+    "storages"
 ]
 
 MIDDLEWARE = [
@@ -92,14 +93,51 @@ WSGI_APPLICATION = "social_media_api.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'alx_social_media_api'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('HOST', 'localhost'),
-        'PORT': os.getenv('PORT', '5432'),  # Default PostgreSQL port
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "alx_social_media_api"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+        "HOST": os.getenv("HOST", "localhost"),
+        "PORT": os.getenv("PORT", "5432"),  # Default PostgreSQL port
     }
+}
+
+# Directory where static files will be collected for production
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# URL to access static files in production
+STATIC_URL = '/static/'
+
+# Directory where media files will be stored
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# URL to access media files in production
+MEDIA_URL = '/media/'
+
+
+# AWS S3 configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID') 
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+
+# For static files (optional)
+AWS_S3_REGION_NAME = 'eu-north-1' 
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+# Static files (use AWS S3 for static files)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Media files (use AWS S3 for media files)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Optional: Set the public URL for your media files
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+# Optional: Static files URL on S3
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
 }
 
 
