@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'bio', 'profile_picture', 'followers']
 
 class RegisterSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)  
+    username = serializers.CharField()  
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})  
     bio = serializers.CharField(required=False, allow_blank=True) 
     profile_picture = serializers.ImageField(required=False)  
