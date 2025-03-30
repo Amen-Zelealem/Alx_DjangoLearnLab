@@ -11,7 +11,6 @@ from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
-
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -19,14 +18,13 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
+        # Use get_object_or_404 for retrieving the post
         post = get_object_or_404(Post, pk=pk)
 
         # Check if the user has already liked the post
-        if Like.objects.filter(post=post, user=request.user).exists():
+        like, created = Like.objects.get_or_create(post=post, user=request.user)
+        if not created:
             return Response({"detail": "You have already liked this post."}, status=400)
-
-        # Create a Like entry
-        like = Like.objects.create(post=post, user=request.user)
 
         # Create a notification for the post author
         notification = Notification.objects.create(
@@ -41,6 +39,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
+        # Use get_object_or_404 for retrieving the post
         post = get_object_or_404(Post, pk=pk)
 
         # Check if the user has liked the post
@@ -88,10 +87,7 @@ class LikePostView(APIView):
 
     def post(self, request, pk):
         # Get the post and the user
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            raise NotFound("Post not found")
+        post = get_object_or_404(Post, pk=pk)
 
         user = request.user
 
@@ -103,14 +99,12 @@ class LikePostView(APIView):
             )
 
         # If the user has already liked the post, return a response
-        if Like.objects.filter(post=post, user=user).exists():
+        like, created = Like.objects.get_or_create(post=post, user=user)
+        if not created:
             return Response(
                 {"detail": "You already liked this post."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # Create the like
-        Like.objects.create(post=post, user=user)
 
         # Create a notification for the post author
         Notification.objects.create(
@@ -127,17 +121,13 @@ class UnlikePostView(APIView):
 
     def post(self, request, pk):
         # Get the post and the user
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            raise NotFound("Post not found")
+        post = get_object_or_404(Post, pk=pk)
 
         user = request.user
 
         # Ensure the user has liked the post
-        try:
-            like = Like.objects.get(post=post, user=user)
-        except Like.DoesNotExist:
+        like = Like.objects.filter(post=post, user=user).first()
+        if not like:
             return Response(
                 {"detail": "You haven't liked this post."},
                 status=status.HTTP_400_BAD_REQUEST,
