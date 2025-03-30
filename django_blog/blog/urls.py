@@ -18,8 +18,8 @@ urlpatterns = [
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),  
 
     # Comments URLs
-    path('post/<int:post_pk>/comments/new/', views.CommentCreateView.as_view(), name='create_comment'),
-    path('comments/<int:pk>/update/', views.CommentUpdateView.as_view(), name='update_comment'),
-    path('comments/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete_comment'),
-    
+    path('post/<int:post_pk>/comments/new/', views.CommentCreateView.as_view(), name='create_comment'), 
+    path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='edit_comment'),  
+    path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete_comment'),  
+  
 ]
